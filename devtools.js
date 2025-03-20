@@ -5,3 +5,8 @@ document.addEventListener('mousedown', function(event){
   }
 });
 
+chrome.devtools.network.onRequestFinished.addListener(request => {
+  chrome.devtools.inspectedWindow.eval(
+    'console.log("' + request.request.url + '")'
+  );
+});
