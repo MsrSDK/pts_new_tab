@@ -27,7 +27,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
       const RECORD_KEYS = [
         "companies/farmers",        // 共同防除発注母体一覧
         "companies/pilots",         // パイロット企業一覧
-        //"companies/pilots/users",   // パイロット一覧
+        "companies/pilots/users",   // パイロット一覧
         "spraying-plans/all",       // 散布計画
         "spraying-projects/list",   // 案件一覧, アサイン
       ];
@@ -52,6 +52,16 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
             if(Object.keys(recordData.urlLast).length != responseArray.length){
               for(const resObj of responseArray){
                 recordData.urlLast[resObj.companyName] = resObj.companyId;
+              }
+            }
+            break;
+
+          case "companies/pilots/users":
+            const pilotsUserArray = bodyObj.response;
+
+            if(Object.keys(recordData.urlLast).length != pilotsUserArray.length){
+              for(const resObj of pilotsUserArray){
+                recordData.urlLast[resObj.userName] = resObj.uuid;
               }
             }
             break;
