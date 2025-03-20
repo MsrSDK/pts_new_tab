@@ -24,27 +24,21 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
       const urlLast = getUrlLast(request.request.url);
 
       // 任意のAPIのみ処理を開始
-      const RECORD_KEYS = ["companies/pilots", "companies/farmers", "spraying-projects/list", "spraying-plans/all"];
+      const RECORD_KEYS = [
+        "companies/farmers",        // 共同防除発注母体一覧
+        "companies/pilots",         // パイロット企業一覧
+        //"companies/pilots/users",   // パイロット一覧
+        "spraying-plans/all",       // 散布計画
+        "spraying-projects/list",   // 案件一覧, アサイン
+      ];
       if(RECORD_KEYS.includes(urlLast)){
         const bodyObj = JSON.parse(body);
         if(!recordData.urlLast) recordData.urlLast = {};
 
         switch(urlLast){
-          case "companies/pilots":
-            const responseArray = bodyObj.response;
-
-            // レコード数が変わっている場合のみデータを更新
-            if(Object.keys(recordData.urlLast).length != responseArray.length){
-              for(const resObj of responseArray){
-                recordData.urlLast[resObj.companyName] = resObj.companyId;
-              }
-            }
-            break;
-
           case "companies/farmers":
             const farmerInfoArray = bodyObj.response.farmerInfoList;
 
-            // レコード数が変わっている場合のみデータを更新
             if(Object.keys(recordData.urlLast).length != farmerInfoArray.length){
               for(const resObj of farmerInfoArray){
                 recordData.urlLast[resObj.companyName] = resObj.companyId;
@@ -52,24 +46,32 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
             }
             break;
 
-            case "spraying-projects/list":  //案件
-              const sprayingProjectsArray = bodyObj.response;
+          case "companies/pilots":
+            const responseArray = bodyObj.response;
 
-              // レコード数が変わっている場合のみデータを更新
-              if(Object.keys(recordData.urlLast).length != sprayingProjectsArray.length){
-                for(const resObj of sprayingProjectsArray){
-                  recordData.urlLast[resObj.name] = resObj.ulid;
+            if(Object.keys(recordData.urlLast).length != responseArray.length){
+              for(const resObj of responseArray){
+                recordData.urlLast[resObj.companyName] = resObj.companyId;
+              }
+            }
+            break;
+
+            case "spraying-plans/all":
+              const sprayingPlansArray = bodyObj.response.result;
+
+              if(Object.keys(recordData.urlLast).length != sprayingPlansArray.length){
+                for(const resObj of sprayingPlansArray){
+                  recordData.urlLast[resObj.name] = resObj.id;
                 }
               }
               break;
 
-            case "spraying-plans/all":  //散布計画
-              const sprayingPlansArray = bodyObj.response.result;
+            case "spraying-projects/list":
+              const sprayingProjectsArray = bodyObj.response;
 
-              // レコード数が変わっている場合のみデータを更新
-              if(Object.keys(recordData.urlLast).length != sprayingPlansArray.length){
-                for(const resObj of sprayingPlansArray){
-                  recordData.urlLast[resObj.name] = resObj.id;
+              if(Object.keys(recordData.urlLast).length != sprayingProjectsArray.length){
+                for(const resObj of sprayingProjectsArray){
+                  recordData.urlLast[resObj.name] = resObj.ulid;
                 }
               }
               break;
