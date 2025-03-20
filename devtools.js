@@ -9,9 +9,6 @@ function getUrlLast(url) {
   const pathname = new URL(url).pathname;
   const match = pathname.match(/v1\/(.*)/);
   if(match && match[1]){
-    chrome.devtools.inspectedWindow.eval(
-      'console.table("' + match[1] + '")'
-    );
     return match[1];
   }
 }
@@ -86,9 +83,6 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
               }
               break;
         }
-        chrome.devtools.inspectedWindow.eval(
-          'console.table("' + Object.keys(recordData.urlLast) + '")'
-        );
       }
     }
   });
