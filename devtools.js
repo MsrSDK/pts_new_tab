@@ -10,6 +10,8 @@ function getUrlLast(url) {
   return pathname.substring(pathname.lastIndexOf('/') + 1);
 }
 
+let recordData = {};
+
 chrome.devtools.network.onRequestFinished.addListener(request => {
   request.getContent((body) => {
     if(request.request && request.request.url){
@@ -18,10 +20,17 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
         const bodyObj = JSON.parse(body);
         const responseArray = bodyObj.response;
 
-        // const responseArray = JSON.stringify(bodyObj.response);
-        chrome.devtools.inspectedWindow.eval(
-          'console.log("' + responseArray + '")'
-        );
+        if(!recordData.urlLast) recordData.urlLast = {};
+        // レコード数が変わっている場合のみデータを更新
+        if(Object.keys(recordData.urlLast).length != responseArray.length){
+          for(const resObj of responseArray){
+
+            recordData.urlLast[resObj.companyName] = resObj.companyId
+            chrome.devtools.inspectedWindow.eval(
+              'console.table("' + recordData.urlLast[resObj.companyName] + '")'
+            );
+          }
+        }
       }
 
     }
