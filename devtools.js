@@ -7,7 +7,8 @@ document.addEventListener('mousedown', function(event){
 
 function getUrlLast(url) {
   const pathname = new URL(url).pathname;
-  return pathname.substring(pathname.lastIndexOf('/') + 1);
+  const match = pathname.match(/v1\/(.*)/);
+  return match[1];
 }
 
 let recordData = {};
@@ -18,13 +19,13 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
       const urlLast = getUrlLast(request.request.url);
 
       // 任意のAPIのみ処理を開始
-      const RECORD_KEYS = ["pilots", "farmers", "list", "all"];
+      const RECORD_KEYS = ["companies/pilots", "companies/farmers", "spraying-projects/list", "spraying-plans/all"];
       if(RECORD_KEYS.includes(urlLast)){
         const bodyObj = JSON.parse(body);
         if(!recordData.urlLast) recordData.urlLast = {};
 
         switch(urlLast){
-          case "pilots":
+          case "companies/pilots":
             const responseArray = bodyObj.response;
 
             // レコード数が変わっている場合のみデータを更新
@@ -35,7 +36,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
             }
             break;
 
-          case "farmers":
+          case "companies/farmers":
             const farmerInfoArray = bodyObj.response.farmerInfoList;
 
             // レコード数が変わっている場合のみデータを更新
@@ -46,7 +47,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
             }
             break;
 
-            case "list":  //案件
+            case "spraying-projects/list":  //案件
               const sprayingProjectsArray = bodyObj.response;
 
               // レコード数が変わっている場合のみデータを更新
@@ -57,7 +58,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
               }
               break;
 
-            case "all":  //散布計画
+            case "spraying-plans/all":  //散布計画
               const sprayingPlansArray = bodyObj.response.result;
 
               // レコード数が変わっている場合のみデータを更新
