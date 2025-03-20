@@ -18,7 +18,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
       const urlLast = getUrlLast(request.request.url);
 
       // 任意のAPIのみ処理を開始
-      const RECORD_KEYS = ["pilots", "farmers"];
+      const RECORD_KEYS = ["pilots", "farmers", "list"];
       if(RECORD_KEYS.includes(urlLast)){
         const bodyObj = JSON.parse(body);
         if(!recordData.urlLast) recordData.urlLast = {};
@@ -45,6 +45,17 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
               }
             }
             break;
+
+            case "list":  //案件
+              const sprayingProjectsArray = bodyObj.response;
+
+              // レコード数が変わっている場合のみデータを更新
+              if(Object.keys(recordData.urlLast).length != sprayingProjectsArray.length){
+                for(const resObj of sprayingProjectsArray){
+                  recordData.urlLast[resObj.name] = resObj.ulid;
+                }
+              }
+              break;
         }
         chrome.devtools.inspectedWindow.eval(
           'console.table("' + Object.keys(recordData.urlLast) + '")'
