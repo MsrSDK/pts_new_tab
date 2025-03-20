@@ -25,7 +25,12 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
         if(Object.keys(recordData.urlLast).length != responseArray.length){
           for(const resObj of responseArray){
 
-            recordData.urlLast[resObj.companyName] = resObj.companyId
+            switch(urlLast){
+              case "pilots":
+                recordData.urlLast[resObj.companyName] = resObj.companyId;
+                break;
+            }
+
             chrome.devtools.inspectedWindow.eval(
               'console.table("' + recordData.urlLast[resObj.companyName] + '")'
             );
