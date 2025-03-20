@@ -16,9 +16,11 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
       const urlLast = getUrlLast(request.request.url);
       if(urlLast == "pilots"){
         const bodyObj = JSON.parse(body);
+        const responseArray = bodyObj.response;
+
+        // const responseArray = JSON.stringify(bodyObj.response);
         chrome.devtools.inspectedWindow.eval(
-          // 'console.log("' + JSON.stringify(bodyObj) + '")'
-          'console.log("' + urlLast + '")'
+          'console.log("' + responseArray + '")'
         );
       }
 
