@@ -16,28 +16,29 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
   request.getContent((body) => {
     if(request.request && request.request.url){
       const urlLast = getUrlLast(request.request.url);
-      if(urlLast == "pilots"){
+
+      // 任意のAPIのみ処理を開始
+      const RECORD_KEYS = ["pilots"];
+      if(RECORD_KEYS.includes(urlLast)){
         const bodyObj = JSON.parse(body);
-        const responseArray = bodyObj.response;
-
         if(!recordData.urlLast) recordData.urlLast = {};
-        // レコード数が変わっている場合のみデータを更新
-        if(Object.keys(recordData.urlLast).length != responseArray.length){
-          for(const resObj of responseArray){
 
-            switch(urlLast){
-              case "pilots":
+        switch(urlLast){
+          case "pilots":
+            const responseArray = bodyObj.response;
+
+            // レコード数が変わっている場合のみデータを更新
+            if(Object.keys(recordData.urlLast).length != responseArray.length){
+              for(const resObj of responseArray){
                 recordData.urlLast[resObj.companyName] = resObj.companyId;
-                break;
+              }
             }
-
-            chrome.devtools.inspectedWindow.eval(
-              'console.table("' + recordData.urlLast[resObj.companyName] + '")'
-            );
-          }
+            break;
         }
+        chrome.devtools.inspectedWindow.eval(
+          'console.table("' + recordData.urlLast[resObj.companyName] + '")'
+        );
       }
-
     }
   });
 });
