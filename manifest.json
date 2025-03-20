@@ -1,5 +1,5 @@
 {
-  "mainfest_version": 3,
+  "manifest_version": 3,
   "name": "PTS New Tab",
   "version": "1.0.0",
   "description": "PTSに新しいタブで開く機能を追加する",
