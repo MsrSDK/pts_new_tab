@@ -18,7 +18,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
       const urlLast = getUrlLast(request.request.url);
 
       // 任意のAPIのみ処理を開始
-      const RECORD_KEYS = ["pilots", "farmers", "list"];
+      const RECORD_KEYS = ["pilots", "farmers", "list", "all"];
       if(RECORD_KEYS.includes(urlLast)){
         const bodyObj = JSON.parse(body);
         if(!recordData.urlLast) recordData.urlLast = {};
@@ -53,6 +53,17 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
               if(Object.keys(recordData.urlLast).length != sprayingProjectsArray.length){
                 for(const resObj of sprayingProjectsArray){
                   recordData.urlLast[resObj.name] = resObj.ulid;
+                }
+              }
+              break;
+
+            case "all":  //散布計画
+              const sprayingPlansArray = bodyObj.response.result;
+
+              // レコード数が変わっている場合のみデータを更新
+              if(Object.keys(recordData.urlLast).length != sprayingPlansArray.length){
+                for(const resObj of sprayingPlansArray){
+                  recordData.urlLast[resObj.name] = resObj.id;
                 }
               }
               break;
