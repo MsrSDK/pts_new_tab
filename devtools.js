@@ -30,58 +30,52 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
       ];
       if(RECORD_KEYS.includes(urlLast)){
         const bodyObj = JSON.parse(body);
-        if(!recordData.urlLast) recordData.urlLast = {};
+        recordData[urlLast] = {};
 
         switch(urlLast){
           case "companies/farmers":
             const farmerInfoArray = bodyObj.response.farmerInfoList;
 
-            if(Object.keys(recordData.urlLast).length != farmerInfoArray.length){
-              for(const resObj of farmerInfoArray){
-                recordData.urlLast[resObj.companyName] = resObj.companyId;
-              }
+            for(const resObj of farmerInfoArray){
+              recordData[urlLast][resObj.companyName] = resObj.companyId;
             }
             break;
 
           case "companies/pilots":
             const responseArray = bodyObj.response;
 
-            if(Object.keys(recordData.urlLast).length != responseArray.length){
-              for(const resObj of responseArray){
-                recordData.urlLast[resObj.companyName] = resObj.companyId;
-              }
+            for(const resObj of responseArray){
+              recordData[urlLast][resObj.companyName] = resObj.companyId;
             }
             break;
 
           case "companies/pilots/users":
             const pilotsUserArray = bodyObj.response;
 
-            if(Object.keys(recordData.urlLast).length != pilotsUserArray.length){
-              for(const resObj of pilotsUserArray){
-                recordData.urlLast[resObj.userName] = resObj.uuid;
-              }
+            // パイロット一覧は企業ごとに存在するので保存方法を変更
+            // POSTのpayloadからcompanyIdを取得
+            const companyId = JSON.parse(request.request.postData.text)["pilotCompanyId"].toString();
+            recordData[urlLast][companyId] = {};
+            for(const resObj of pilotsUserArray){
+              recordData[urlLast][companyId][resObj.user.userName] = resObj.user.uuid;
             }
             break;
 
-            case "spraying-plans/all":
-              const sprayingPlansArray = bodyObj.response.result;
+          case "spraying-plans/all":
+            const sprayingPlansArray = bodyObj.response.result;
 
-              if(Object.keys(recordData.urlLast).length != sprayingPlansArray.length){
-                for(const resObj of sprayingPlansArray){
-                  recordData.urlLast[resObj.name] = resObj.id;
-                }
-              }
-              break;
+            for(const resObj of sprayingPlansArray){
+              recordData[urlLast][resObj.name] = resObj.id;
+            }
+            break;
 
-            case "spraying-projects/list":
-              const sprayingProjectsArray = bodyObj.response;
+          case "spraying-projects/list":
+            const sprayingProjectsArray = bodyObj.response;
 
-              if(Object.keys(recordData.urlLast).length != sprayingProjectsArray.length){
-                for(const resObj of sprayingProjectsArray){
-                  recordData.urlLast[resObj.name] = resObj.ulid;
-                }
-              }
-              break;
+            for(const resObj of sprayingProjectsArray){
+              recordData[urlLast][resObj.name] = resObj.ulid;
+            }
+            break;
         }
       }
     }
