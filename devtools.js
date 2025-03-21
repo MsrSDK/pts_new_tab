@@ -1,7 +1,6 @@
-//ctrl + クリックで発火
-document.addEventListener('mousedown', function(event){
-  if(event.ctrlKey && event.button === 0){
-    mainFunction();
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.action === "getRecordData") {
+    sendResponse(recordData);  // 応答を送信
   }
 });
 
