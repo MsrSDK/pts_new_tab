@@ -1,6 +1,6 @@
 // content_scriptからのリクエストにレコードを送信
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  if (request.action === "getRecordData") {
+  if (request.action === "fetchRecordData") {
     sendResponse(recordData);  // 応答を送信
   }
 });
