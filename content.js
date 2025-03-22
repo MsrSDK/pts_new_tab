@@ -45,7 +45,13 @@ function replaceTdItem(message, i){
     if(tdText in dataHash){
 
       const link = document.createElement('a');
-      link.href = currentUrl + '/' + dataHash[tdText];
+      const firstKey = Object.keys(message)[0];
+      if(/^\d+$/.test(firstKey)) {
+        // 最初のキーが数字(パイロット一覧)の場合はusersを入れる必要がある
+        link.href = currentUrl + '/users/' + dataHash[tdText];
+      }else{
+        link.href = currentUrl + '/' + dataHash[tdText];
+      }
       link.textContent = tdText;
       link.addEventListener('click', function(event) {
         event.stopPropagation(); // バブリングを停止
