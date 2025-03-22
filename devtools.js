@@ -1,8 +1,18 @@
+// content_scriptからのリクエストにレコードを送信
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action === "getRecordData") {
     sendResponse(recordData);  // 応答を送信
   }
 });
+
+// URLの変化(APIの実行)をトリガーとしてcontent_scriptにレコードを送信
+function sendRecord() {
+  // 現在アクティブなタブを取得
+  chrome.tabs.query( {active:true, currentWindow:true}, function(tabs){
+    // レコードを送信
+    chrome.tabs.sendMessage(tabs[0].id, {action: 'sendRecordData', message: recordData});
+  });
+};
 
 function getUrlLast(url) {
   const pathname = new URL(url).pathname;
@@ -38,6 +48,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
             for(const resObj of farmerInfoArray){
               recordData[urlLast][resObj.companyName] = resObj.companyId;
             }
+            sendRecord();
             break;
 
           case "companies/pilots":
@@ -46,6 +57,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
             for(const resObj of responseArray){
               recordData[urlLast][resObj.companyName] = resObj.companyId;
             }
+            sendRecord();
             break;
 
           case "companies/pilots/users":
@@ -58,6 +70,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
             for(const resObj of pilotsUserArray){
               recordData[urlLast][companyId][resObj.user.userName] = resObj.user.uuid;
             }
+            sendRecord();
             break;
 
           case "spraying-plans/all":
@@ -66,6 +79,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
             for(const resObj of sprayingPlansArray){
               recordData[urlLast][resObj.name] = resObj.id;
             }
+            sendRecord();
             break;
 
           case "spraying-projects/list":
@@ -74,6 +88,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
             for(const resObj of sprayingProjectsArray){
               recordData[urlLast][resObj.name] = resObj.ulid;
             }
+            sendRecord();
             break;
         }
       }

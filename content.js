@@ -33,3 +33,11 @@ function getElement(){
 
 // ページリロード時に発火
 document.addEventListener('load', (event) => { getElement(); }, true);
+
+// devtoolsからのレコードを受け取り
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.action === "sendRecordData") {
+    console.log("レコードを受け取りました: ", request.message);
+  }
+  return;
+});
