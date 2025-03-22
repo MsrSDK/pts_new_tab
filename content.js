@@ -1,11 +1,14 @@
-function getElement(){
+let tbodyElement = [];
+
+function getTbodyElement(){
   const elements = document.getElementsByTagName('tbody');
 
   if (elements.length > 0) {
-    // 変更を監視するオブザーバーのオプション
-    const config = { childList: true };
+    const config = { childList: true }; // 変更を監視するオブザーバーのオプション
     // 変更が発見されたときに実行されるコールバック関数
     const callback = (mutationList, observer) => {
+      observer.disconnect();  // 既存の監視を停止
+
       if (mutationList[0].type === "childList") {
         console.log("子ノードが追加または削除されました。");
         // テーブルのページが変わるとき
@@ -27,12 +30,11 @@ function getElement(){
 
 // テーブル行内のi番目の文字列をリンクに置換
 function replaceTdItem(message, i){
-  const tbodyEle = getElement();
   const requestFirstKey = Object.keys(message)[0];
   const dataHash = message[requestFirstKey];
   const currentUrl = window.location.href;
 
-  trArray = tbodyEle.getElementsByTagName('tr');
+  trArray = tbodyElement.getElementsByTagName('tr');
   for(const tr of trArray) {
     const tdArray = tr.getElementsByTagName('td');
     const tdText = tdArray[i].textContent;
@@ -61,6 +63,7 @@ function fetchRecordData() {
     }
     console.log("バックエンドからの応答:",response);
 
+    tbodyElement = getTbodyElement();
     // テーブルによっては対象文字列が1番目ではない
     for(let i = 0; i < 3; i++) {
       replaceTdItem(response, i);
@@ -73,6 +76,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action === "sendRecordData") {
     console.log("レコードを受け取りました: ", request.message);
 
+    tbodyElement = getTbodyElement();
     // テーブルによっては対象文字列が1番目ではない
     for(let i = 0; i < 3; i++) {
       replaceTdItem(request.message, i);
