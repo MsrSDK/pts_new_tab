@@ -10,7 +10,7 @@ function getTbodyElement(){
       observer.disconnect();  // 既存の監視を停止
 
       if (mutationList[0].type === "childList") {
-        console.log("子ノードが追加または削除されました。");
+        // console.log("子ノードが追加または削除されました。");
         // テーブルのページが変わるとき
         fetchRecordData();
       }
@@ -82,7 +82,7 @@ function fetchRecordData() {
       console.error(chrome.runtime.lastError);
       return;
     }
-    console.log("バックエンドからの応答:",response);
+    // console.log("バックエンドからの応答:",response);
 
     // 案件>アサイン画面の場合は処理を実行しない
     const urlLastPart = getCurrentUrlLast();
@@ -99,7 +99,7 @@ function fetchRecordData() {
 // devtoolsからのレコードを受け取り
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action === "sendRecordData") {
-    console.log("レコードを受け取りました: ", request.message);
+    // console.log("レコードを受け取りました: ", request.message);
 
     // 案件>アサイン画面の場合は処理を実行しない
     const urlLastPart = getCurrentUrlLast();
