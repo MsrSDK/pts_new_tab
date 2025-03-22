@@ -65,7 +65,11 @@ function fetchRecordData() {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action === "sendRecordData") {
     console.log("レコードを受け取りました: ", request.message);
-    replaceTdItem(request.message, 0);
+
+    // テーブルによっては対象文字列が1番目ではない
+    for(let i = 0; i < 3; i++) {
+      replaceTdItem(request.message, i);
+    }
   }
   return;
 });
