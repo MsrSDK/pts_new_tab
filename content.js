@@ -57,6 +57,16 @@ function replaceTdItem(message, i){
   }
 }
 
+// 現在のURLの末尾の文字列を取得
+function getCurrentUrlLast(){
+  const currentUrl = window.location.href;
+  const lastSlashIndex = currentUrl.lastIndexOf('/');
+  if (lastSlashIndex !== -1 && lastSlashIndex < currentUrl.length - 1) {
+    const lastPart = currentUrl.substring(lastSlashIndex + 1);
+    return lastPart;
+  }
+}
+
 // 最新のレコードをdevtoolsから取得
 function fetchRecordData() {
   const message = { "action": "fetchRecordData" }
@@ -66,6 +76,10 @@ function fetchRecordData() {
       return;
     }
     console.log("バックエンドからの応答:",response);
+
+    // 案件>アサイン画面の場合は処理を実行しない
+    const urlLastPart = getCurrentUrlLast();
+    if(urlLastPart == 'spraying-project-assign') return;
 
     tbodyElement = getTbodyElement();
     // テーブルによっては対象文字列が1番目ではない
@@ -79,6 +93,10 @@ function fetchRecordData() {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action === "sendRecordData") {
     console.log("レコードを受け取りました: ", request.message);
+
+    // 案件>アサイン画面の場合は処理を実行しない
+    const urlLastPart = getCurrentUrlLast();
+    if(urlLastPart == 'spraying-project-assign') return;
 
     tbodyElement = getTbodyElement();
     // テーブルによっては対象文字列が1番目ではない
