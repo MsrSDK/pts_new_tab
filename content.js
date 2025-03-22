@@ -8,6 +8,8 @@ function getElement(){
     const callback = (mutationList, observer) => {
       if (mutationList[0].type === "childList") {
         console.log("子ノードが追加または削除されました。");
+        // テーブルのページが変わるとき
+        fetchRecordData();
       }
     };
 
@@ -27,17 +29,17 @@ function getElement(){
 function replaceTdItem(message, i){
   const tbodyEle = getElement();
   const requestFirstKey = Object.keys(message)[0];
-  const dataList = message[requestFirstKey];
+  const dataHash = message[requestFirstKey];
   const currentUrl = window.location.href;
 
   trArray = tbodyEle.getElementsByTagName('tr');
   for(const tr of trArray) {
     const tdArray = tr.getElementsByTagName('td');
     const tdText = tdArray[i].textContent;
-    if(tdText in dataList){
+    if(tdText in dataHash){
 
       const link = document.createElement('a');
-      link.href = currentUrl + '/' + dataList[tdText];
+      link.href = currentUrl + '/' + dataHash[tdText];
       link.textContent = tdText;
       link.addEventListener('click', function(event) {
         event.stopPropagation(); // バブリングを停止
@@ -54,10 +56,15 @@ function fetchRecordData() {
   const message = { "action": "fetchRecordData" }
   chrome.runtime.sendMessage(message, function(response) {
     if (chrome.runtime.lastError) {
-      // console.error(chrome.runtime.lastError);
+      console.error(chrome.runtime.lastError);
       return;
     }
-    console.log("バックエンドからの応答:", response);
+    console.log("バックエンドからの応答:",response);
+
+    // テーブルによっては対象文字列が1番目ではない
+    for(let i = 0; i < 3; i++) {
+      replaceTdItem(response, i);
+    }
   });
 }
 
