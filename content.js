@@ -30,6 +30,10 @@ function getTbodyElement(){
 
 // テーブル行内のi番目の文字列をリンクに置換
 function replaceTdItem(message, i){
+  // companies/pilots/usersはネストが1つ多いので処理を追加
+  if(Object.keys(message)[0] == 'companies/pilots/users') {
+    message = message['companies/pilots/users'];
+  }
   const requestFirstKey = Object.keys(message)[0];
   const dataHash = message[requestFirstKey];
   const currentUrl = window.location.href;
