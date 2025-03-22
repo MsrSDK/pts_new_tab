@@ -5,7 +5,7 @@ function getElement(){
   if (elements.length > 0) {
     chrome.runtime.sendMessage(message, function(response) {
       if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
+        // console.error(chrome.runtime.lastError);
         return;
       }
       console.log("バックエンドからの応答:", response);
@@ -14,10 +14,8 @@ function getElement(){
       const config = { childList: true };
       // 変更が発見されたときに実行されるコールバック関数
       const callback = (mutationList, observer) => {
-        for (const mutation of mutationList) {
-          if (mutation.type === "childList") {
-            console.log("子ノードが追加または削除されました。");
-          }
+        if (mutationList[0].type === "childList") {
+          console.log("子ノードが追加または削除されました。");
         }
       };
 
