@@ -39,6 +39,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
       ];
       if(RECORD_KEYS.includes(urlLast)){
         const bodyObj = JSON.parse(body);
+        recordData = {};
         recordData[urlLast] = {};
 
         switch(urlLast){
