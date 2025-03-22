@@ -41,6 +41,7 @@ function replaceTdItem(message, i){
   trArray = tbodyElement.getElementsByTagName('tr');
   for(const tr of trArray) {
     const tdArray = tr.getElementsByTagName('td');
+    if(!tdArray[i]?.textContent) continue;  // i番目のテキストが空だったらスキップ
     const tdText = tdArray[i].textContent;
     if(tdText in dataHash){
 
