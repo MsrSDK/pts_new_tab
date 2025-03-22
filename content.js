@@ -23,6 +23,32 @@ function getElement(){
   }
 }
 
+// テーブル行内のi番目の文字列をリンクに置換
+function replaceTdItem(message, i){
+  const tbodyEle = getElement();
+  const requestFirstKey = Object.keys(message)[0];
+  const dataList = message[requestFirstKey];
+  const currentUrl = window.location.href;
+
+  trArray = tbodyEle.getElementsByTagName('tr');
+  for(const tr of trArray) {
+    const tdArray = tr.getElementsByTagName('td');
+    const tdText = tdArray[i].textContent;
+    if(tdText in dataList){
+
+      const link = document.createElement('a');
+      link.href = currentUrl + '/' + dataList[tdText];
+      link.textContent = tdText;
+      link.addEventListener('click', function(event) {
+        event.stopPropagation(); // バブリングを停止
+      });
+
+      tdArray[i].textContent = '';
+      tdArray[i].appendChild(link);
+    }
+  }
+}
+
 // 最新のレコードをdevtoolsから取得
 function fetchRecordData() {
   const message = { "action": "fetchRecordData" }
@@ -39,28 +65,7 @@ function fetchRecordData() {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action === "sendRecordData") {
     console.log("レコードを受け取りました: ", request.message);
-
-    const tbodyEle = getElement();
-    const requestFirstKey = Object.keys(request.message)[0];
-    const dataList = request.message[requestFirstKey];
-
-    trArray = tbodyEle.getElementsByTagName('tr');
-    for(const tr of trArray) {
-      const tdArray = tr.getElementsByTagName('td');
-      if(tdArray[0].textContent in dataList){
-
-        const currentUrl = window.location.href;
-        const link = document.createElement('a');
-        link.href = currentUrl + '/' + dataList[tdArray[0].textContent];
-        link.textContent = tdArray[0].textContent;
-        link.addEventListener('click', function(event) {
-          event.stopPropagation(); // バブリングを停止
-        });
-
-        tdArray[0].textContent = '';
-        tdArray[0].appendChild(link);
-      }
-    }
+    replaceTdItem(request.message, 0);
   }
   return;
 });
