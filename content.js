@@ -54,6 +54,7 @@ function replaceTdItem(message, i){
         link.href = currentUrl + '/' + dataHash[tdText];
       }
       link.textContent = tdText;
+      link.target = '_blank';
       link.addEventListener('click', function(event) {
         event.stopPropagation(); // バブリングを停止
       });
