@@ -6,7 +6,10 @@
   "devtools_page": "devtools.html",
   "content_scripts": [
     {
-      "matches": ["https://*/"],
+      "matches": [
+        "https://agri-pts.optim.co.jp/*",
+        "https://agri-pts-test.optim-test.com/*"
+      ],
       "js": ["content.js"]
     }
   ],
