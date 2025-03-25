@@ -50,6 +50,11 @@ function replaceTdItem(message, i){
       if(/^\d+$/.test(firstKey)) {
         // 最初のキーが数字(パイロット一覧)の場合はusersを入れる必要がある
         link.href = currentUrl + '/users/' + dataHash[tdText];
+      }else if(getCurrentUrlLast() == 'all-spraying-plans'){
+        // 散布計画の場合はURL末尾を置き換える必要がある
+        const lastSlashIndex = currentUrl.lastIndexOf('/');
+        const url = currentUrl.substring(0, lastSlashIndex);
+        link.href = url + '/spraying-plans/' + dataHash[tdText];
       }else{
         link.href = currentUrl + '/' + dataHash[tdText];
       }
